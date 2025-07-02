@@ -1,0 +1,461 @@
+// Import Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+// Variables to match ClickUp design
+:root {
+  --cu-free-color: #00c851;
+  --cu-unlimited-color: #f018e3;
+  --cu-business-color: #1f7cff;
+  --cu-enterprise-color: #2c2a41;
+  --cu-text-dark: #1a1a1a;
+  --cu-text-gray: #6b7280;
+  --cu-border-light: #e5e7eb;
+  --cu-background-white: #ffffff;
+  --cu-success-green: #00c851;
+  --cu-highlight-purple: #8f22d2;
+}
+
+// Main wrapper
+.cu-pricing-table-wrapper {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin: 32px 0;
+  max-width: 1200px;
+  
+  * {
+    box-sizing: border-box;
+  }
+}
+
+// Banner (AI pricing banner)
+.cu-pricing-banner {
+  background: linear-gradient(135deg, var(--cu-business-color) 0%, #1a6ee6 100%);
+  border-radius: 12px 12px 0 0;
+  padding: 16px 24px;
+  text-align: center;
+  margin-bottom: 0;
+  
+  .cu-banner-content {
+    .cu-banner-text {
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.025em;
+    }
+  }
+}
+
+// Main pricing table container
+.cu-pricing-table {
+  background: var(--cu-background-white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: visible; // Changed from hidden to visible
+  border: 1px solid var(--cu-border-light);
+  //padding-top: 16px; // Add space for the badge
+  
+  .cu-pricing-banner + & {
+    border-radius: 0 0 12px 12px;
+  }
+}
+
+// Plans grid - horizontal layout
+.cu-pricing-plans {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  overflow: visible; // Ensure grid doesn't clip the badge
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Individual plan card
+.cu-pricing-plan {
+  position: relative;
+  padding: 25px 28px 32px;
+  border-right: 1px solid var(--cu-border-light);
+  background: var(--cu-background-white);
+  display: flex;
+  flex-direction: column;
+  min-height: 460px;
+  display: flex;
+  justify-content: space-between; 
+  
+  // First card - rounded left corners
+  &:first-child {
+    border-radius: 12px 0 0 12px;
+  }
+  
+  // Last card - rounded right corners
+  &:last-child {
+    border-radius: 0 12px 12px 0;
+    border-right: none;
+  }
+  
+  // Free Forever styling
+  &:nth-child(1) {
+    .cu-plan-name {
+      color: var(--cu-free-color);
+    }
+    .cu-price-amount {
+      color: var(--cu-free-color);
+    }
+    .cu-cta-button {
+      background: var(--cu-free-color);
+      
+      &:hover {
+        background: #00b849;
+      }
+    }
+  }
+  
+  // Unlimited styling
+  &:nth-child(2) {
+    .cu-plan-name {
+      color: var(--cu-unlimited-color);
+    }
+    .cu-price-currency,
+    .cu-price-amount {
+      color: var(--cu-unlimited-color);
+    }
+    .cu-cta-button {
+      background: var(--cu-unlimited-color);
+      
+      &:hover {
+        background: #e016d9;
+      }
+    }
+  }
+  
+  // Business styling (most popular)
+  &:nth-child(3) {
+    .cu-plan-name {
+      color: var(--cu-business-color);
+    }
+    .cu-price-currency,
+    .cu-price-amount {
+      color: var(--cu-business-color);
+    }
+    .cu-cta-button {
+      background: var(--cu-business-color);
+      
+      &:hover {
+        background: #1a6ee6;
+      }
+    }
+  }
+  
+  // Enterprise styling
+  &:nth-child(4) {
+    .cu-plan-name {
+      color: var(--cu-enterprise-color);
+    }
+    .cu-price-amount {
+      color: var(--cu-enterprise-color);
+    }
+    .cu-cta-button {
+      background: var(--cu-enterprise-color);
+      
+      &:hover {
+        background: #252338;
+      }
+    }
+  }
+  
+  // Popular plan styling
+  &.cu-plan-popular {
+    
+    .cu-plan-badge {
+      display: flex;
+      justify-content: center;
+    }
+  }
+  
+  @media (max-width: 767px) {
+    border-right: none;
+    border-bottom: 1px solid var(--cu-border-light);
+    min-height: auto;
+    padding: 24px 20px 32px; // Reset padding for mobile
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+// Popular badge
+.cu-plan-badge {
+  outline: 2px solid white;
+  outline-offset: -3px;
+  border: 2px solid var(--cu-border-light);
+  display: none;
+  position: absolute;
+  top: -38px; // Moved up more to account for container padding
+  left: 0;
+  right: 0;
+  background: var(--cu-business-color);
+  color: white;
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  z-index: 10;
+  text-align: center;
+  border-radius: 14px 14px 0 0; // Rounded top corners to match card
+}
+
+// Plan header
+.cu-plan-header {
+  text-align: left;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+  min-height: 150px;
+  
+  .cu-plan-name {
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    line-height: 1.2;
+  }
+  
+  .cu-plan-description {
+    font-size: 18px;
+    color: var(--cu-text-dark);
+    line-height: 1.4;
+    margin-bottom: 15px; 
+    font-weight: 500;
+    min-height: 20px;
+  }
+  
+  .cu-plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    //margin-bottom: 16px;
+    min-height: 57px;
+    
+    
+    .cu-price-currency {
+      font-size: 28px;
+      font-weight: 800;
+      vertical-align: top;
+      line-height: 1;
+      position: relative;
+      top: -0.7em; 
+    }
+    
+    .cu-price-amount {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+
+      &.free {
+        text-transform: uppercase;
+      }
+
+      &.enterprise {
+        color: var(--cu-enterprise-color);
+        font-size: 16px;
+        font-weight: 200;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+      }
+    }
+
+
+    
+    
+    .cu-price-period {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--cu-text-gray);
+      margin-left: 4px;
+    }
+  }
+}
+
+// CTA Button - now positioned after header, before features
+.cu-plan-footer {
+  margin-bottom: 24px; // Add space between button and features
+  flex-shrink: 0;
+  min-height: 103px;
+
+  &-text {
+    font-size: 14px;
+    text-align: center;
+    color: var(--cu-text-gray);
+  }
+  
+  .cu-cta-button {
+    display: block;
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    color: white;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Features list - now at the bottom
+.cu-plan-features {
+  flex-grow: 1; // Takes remaining space
+  margin-bottom: 0; // No bottom margin since it's at the end
+  min-height: 150px;
+
+  .cu-features-list-header {
+    font-weight: 800;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .highlight {
+    color: var(--cu-highlight-purple);
+  }
+  
+  .cu-features-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    
+    .cu-feature-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 6px 0;
+      
+      .cu-feature-icon {
+        color: var(--cu-text-dark);
+        font-weight: 700;
+        font-size: 14px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      
+      .cu-feature-text {
+        font-size: 14px;
+        color: var(--cu-text-dark);
+        line-height: 1.4;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Error states
+.cu-pricing-error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+
+// Responsive adjustments
+@media (max-width: 1024px) {
+
+  .cu-pricing-table {
+    background-color: none;
+    box-shadow: none;
+    border: none;
+  }
+
+  .cu-pricing-plan {
+    padding: 20px 16px 28px;
+    min-height: 440px;
+    border-radius: 12px !important;
+    border: 1px solid var(--cu-border-light) !important;
+    margin-top: 50px;
+
+    &.cu-plan-popular {
+        padding-top: 20px;
+    }
+  }
+  
+  .cu-plan-header .cu-plan-price .cu-price-amount {
+    font-size: 48px;
+  }
+
+  
+
+  .cu-plan-badge {
+    top: -22px;
+  }
+}
+
+@media (max-width: 767px) {
+  .cu-pricing-table-wrapper {
+    margin: 20px 0;
+  }
+
+  
+  
+  .cu-pricing-plan {
+    padding: 24px 20px;
+    min-height: auto;
+
+    &.cu-plan-popular {
+        padding-top: 60px;
+    }
+  }
+  
+  .cu-plan-header .cu-plan-price .cu-price-amount {
+    font-size: 40px;
+  }
+  
+  .cu-plan-badge {
+    top: 0;
+    border-radius: 10px 10px 0 0;
+  }
+}
+
+.cu-see-more-features {
+    position: absolute;
+    bottom: -19px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 1px solid var(--cu-border-light);
+    background-color: var(--cu-background-white);
+    color: #1a1a1a;
+    width: 100%;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 12px 32px;
+    border-radius: 999px; // makes it pill-shaped
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  
+    &:hover {
+      background-color: #eaeaec;
+      transform: translateX(-50%) scale(1.02);
+    }
+  }
+  
+  // Ensure .cu-pricing-plans is relatively positioned so the button can be absolute inside it
+  .cu-pricing-plans {
+    position: relative;
+    padding-bottom: 60px; // give room for button so it doesn’t overlap content
+  }
+  
