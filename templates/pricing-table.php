@@ -6,6 +6,7 @@
  * $selected_plans - array of plan slugs to display
  * $show_banner - boolean for banner display
  * $banner_text - string for banner text
+ * $banner_subtext - string for banner subtext
  * $cta_text - string for CTA button text
  * $pricing_data - array of pricing data from API
  */
@@ -56,14 +57,6 @@ if (empty($filtered_plans)) {
 ?>
 
 <div class="cu-pricing-table-wrapper" id="cu-pricing-table-<?php echo uniqid(); ?>">
-    <?php if ($show_banner && $banner_text): ?>
-        <div class="cu-pricing-banner">
-            <div class="cu-banner-content">
-                <span class="cu-banner-text"><?php echo esc_html($banner_text); ?></span>
-            </div>
-        </div>
-    <?php endif; ?>
-
     <div class="cu-pricing-table">
         <div class="cu-pricing-plans">
             <?php foreach ($filtered_plans as $index => $plan): ?>
@@ -74,7 +67,7 @@ if (empty($filtered_plans)) {
                 $is_enterprise = strtolower($plan['tier']) === 'enterprise';
                 ?>
                 
-                <div class="cu-pricing-plan <?php echo $is_popular ? 'cu-plan-popular' : ''; ?>">
+                <div class="cu-pricing-plan<?php echo $is_popular ? ' cu-plan-popular' : ''; ?>">
                     <?php if ($is_popular): ?>
                         <div class="cu-plan-badge">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" width="16" height="16" viewBox="0 0 24 24" style="margin-right: 6px;">
@@ -96,8 +89,7 @@ if (empty($filtered_plans)) {
                             <?php if ($is_free): ?>
                                 <span class="cu-price-amount free">Free</span>
                             <?php elseif ($is_enterprise): ?>
-                                <span class="cu-price-amount enterprise">Get a custom demo and see how ClickUp aligns with your goals.</span>
-                                
+                                <span class="cu-price-amount enterprise"><?php echo esc_html($enterprise_description ?: 'Get a custom demo and see how ClickUp aligns with your goals.'); ?></span>
                             <?php else: ?>
                                 <span class="cu-price-currency">$</span>
                                 <span class="cu-price-amount">
@@ -110,11 +102,14 @@ if (empty($filtered_plans)) {
 
                     <div class="cu-plan-footer">
                         <?php 
-                        $button_text = $cta_text;
+                        // Handle button text with proper fallbacks
                         if ($is_free) {
                             $button_text = $plan['ctaButton']; // "Free forever"
                         } elseif ($is_enterprise) {
                             $button_text = $plan['ctaButton']; // "Contact sales"
+                        } else {
+                            // Use the CTA text (which already has fallback to "Get started")
+                            $button_text = $cta_text;
                         }
                         ?>
                         <a 
@@ -129,7 +124,6 @@ if (empty($filtered_plans)) {
                         <?php if ($is_unlimited || $is_popular): ?>
                             <p class="cu-plan-footer-text">Billed per user per month</p>
                         <?php endif ?>
-
                     </div>
 
                     <div class="cu-plan-features">
@@ -161,4 +155,18 @@ if (empty($filtered_plans)) {
             <button class="cu-see-more-features" id="cu-see-more-btn">See more features</button>
         </div>
     </div>
+
+    <?php if ($show_banner): ?>
+    <div class="cu-ai-banner">
+        <div class="cu-ai-banner-content">
+            <div class="cu-ai-banner-text">
+                <span class="cu-ai-banner-title"><?php echo esc_html($banner_text ?: "The world's most complete work AI, starting at $9 per month"); ?></span>
+                <span class="cu-ai-banner-subtitle"><?php echo esc_html($banner_subtext ?: "ClickUp Brain is a no Brainer. One AI to manage your work, at a fraction of the cost."); ?></span>
+            </div>
+            <a href="https://clickup.com/ai" target="_blank" rel="noopener noreferrer" class="cu-ai-banner-cta">
+                <?php echo esc_html($banner_cta_text ?: 'Try for free'); ?>
+            </a>
+        </div>
+    </div>
+<?php endif; ?>
 </div>

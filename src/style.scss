@@ -1,7 +1,7 @@
 // Import Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-// Variables to match ClickUp design
+// Variables
 :root {
   --cu-free-color: #00c851;
   --cu-unlimited-color: #f018e3;
@@ -9,7 +9,7 @@
   --cu-enterprise-color: #2c2a41;
   --cu-text-dark: #1a1a1a;
   --cu-text-gray: #6b7280;
-  --cu-border-light: #e5e7eb;
+  --cu-border-light: #b0b0b0;
   --cu-background-white: #ffffff;
   --cu-success-green: #00c851;
   --cu-highlight-purple: #8f22d2;
@@ -18,29 +18,11 @@
 // Main wrapper
 .cu-pricing-table-wrapper {
   font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  margin: 32px 0;
+  margin: 60px 0;
   max-width: 1200px;
   
   * {
     box-sizing: border-box;
-  }
-}
-
-// Banner (AI pricing banner)
-.cu-pricing-banner {
-  background: linear-gradient(135deg, var(--cu-business-color) 0%, #1a6ee6 100%);
-  border-radius: 12px 12px 0 0;
-  padding: 16px 24px;
-  text-align: center;
-  margin-bottom: 0;
-  
-  .cu-banner-content {
-    .cu-banner-text {
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-      letter-spacing: 0.025em;
-    }
   }
 }
 
@@ -49,12 +31,14 @@
   background: var(--cu-background-white);
   border-radius: 12px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: visible; // Changed from hidden to visible
+  overflow: visible;
   border: 1px solid var(--cu-border-light);
-  //padding-top: 16px; // Add space for the badge
-  
-  .cu-pricing-banner + & {
-    border-radius: 0 0 12px 12px;
+  margin-bottom: 20px;
+
+  &.open {
+    .cu-pricing-plans {
+        padding-bottom: 0;
+    }
   }
 }
 
@@ -62,7 +46,7 @@
 .cu-pricing-plans {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  overflow: visible; // Ensure grid doesn't clip the badge
+  overflow: visible;
   
   @media (max-width: 1024px) {
     grid-template-columns: repeat(2, 1fr);
@@ -91,7 +75,7 @@
   }
   
   // Last card - rounded right corners
-  &:last-child {
+  &:last-of-type {
     border-radius: 0 12px 12px 0;
     border-right: none;
   }
@@ -179,7 +163,7 @@
     border-right: none;
     border-bottom: 1px solid var(--cu-border-light);
     min-height: auto;
-    padding: 24px 20px 32px; // Reset padding for mobile
+    padding: 24px 20px 32px;
     
     &:last-child {
       border-bottom: none;
@@ -189,30 +173,36 @@
 
 // Popular badge
 .cu-plan-badge {
-  outline: 2px solid white;
-  outline-offset: -3px;
-  border: 2px solid var(--cu-border-light);
-  display: none;
-  position: absolute;
-  top: -38px; // Moved up more to account for container padding
-  left: 0;
-  right: 0;
-  background: var(--cu-business-color);
-  color: white;
-  padding: 8px 20px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  z-index: 10;
-  text-align: center;
-  border-radius: 14px 14px 0 0; // Rounded top corners to match card
+    display: none;
+    position: absolute;
+    top: -33px;
+    left: 2px;   /* Move in by the border width (4px total border / 2 = 2px each side) */
+    right: 2px;  /* Move in by the border width */
+    background: var(--cu-business-color);
+    color: white;
+    padding: 8px 20px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    z-index: 10;
+    text-align: center;
+    border-radius: 14px 14px 0 0;
+    
+    /* Modified box-shadow - remove bottom border */
+    box-shadow: 
+      2px 0 0 0 white,                           /* Left white border */
+      -2px 0 0 0 white,                          /* Right white border */
+      0 -2px 0 0 white,                          /* Top white border */
+      3px 0 0 0 var(--cu-border-light),          /* Left outer grey border */
+      -3px 0 0 0 var(--cu-border-light),         /* Right outer grey border */
+      0 -3px 0 0 var(--cu-border-light);         /* Top outer grey border */
 }
 
 // Plan header
 .cu-plan-header {
   text-align: left;
-  margin-bottom: 24px;
+  margin-bottom: 10px;
   flex-shrink: 0;
   min-height: 150px;
   
@@ -236,9 +226,7 @@
     display: flex;
     align-items: baseline;
     gap: 4px;
-    //margin-bottom: 16px;
     min-height: 57px;
-    
     
     .cu-price-currency {
       font-size: 28px;
@@ -267,9 +255,6 @@
         letter-spacing: -0.02em;
       }
     }
-
-
-    
     
     .cu-price-period {
       font-size: 18px;
@@ -280,9 +265,9 @@
   }
 }
 
-// CTA Button - now positioned after header, before features
+// CTA Button
 .cu-plan-footer {
-  margin-bottom: 24px; // Add space between button and features
+  margin-bottom: 0;
   flex-shrink: 0;
   min-height: 103px;
 
@@ -316,10 +301,10 @@
   }
 }
 
-// Features list - now at the bottom
+// Features list
 .cu-plan-features {
-  flex-grow: 1; // Takes remaining space
-  margin-bottom: 0; // No bottom margin since it's at the end
+  flex-grow: 1;
+  margin-bottom: 0;
   min-height: 150px;
 
   .cu-features-list-header {
@@ -361,6 +346,114 @@
   }
 }
 
+// See more features button
+.cu-see-more-features {
+  position: absolute;
+  bottom: -19px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid var(--cu-border-light);
+  background-color: var(--cu-background-white);
+  color: #1a1a1a;
+  width: 100%;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 12px 32px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background-color: #eaeaec;
+    transform: translateX(-50%) scale(1.02);
+  }
+}
+
+.cu-pricing-plans {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+// AI Banner 
+.cu-ai-banner {
+  background: linear-gradient(135deg, #2c2a41 0%, #1a1731 100%);
+  border-radius: 16px;
+  padding: 24px 32px;
+  margin-top: 80px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  
+  .cu-ai-banner-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    
+    .cu-ai-banner-text {
+      flex: 1;
+      
+      .cu-ai-banner-title {
+        display: block;
+        color: white;
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: 8px;
+      }
+      
+      .cu-ai-banner-subtitle {
+        display: block;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        font-weight: 400;
+        line-height: 1.4;
+      }
+    }
+    
+    .cu-ai-banner-cta {
+      background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+      }
+    }
+  }
+  
+  @media (max-width: 767px) {
+    padding: 20px 24px;
+    
+    .cu-ai-banner-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 20px;
+      
+      .cu-ai-banner-text {
+        .cu-ai-banner-title {
+          font-size: 24px;
+        }
+        
+        .cu-ai-banner-subtitle {
+          font-size: 14px;
+        }
+      }
+      
+      .cu-ai-banner-cta {
+        padding: 14px 28px;
+        font-size: 15px;
+      }
+    }
+  }
+}
+
 // Error states
 .cu-pricing-error {
   background: #fef2f2;
@@ -374,11 +467,11 @@
 
 // Responsive adjustments
 @media (max-width: 1024px) {
-
   .cu-pricing-table {
     background-color: none;
     box-shadow: none;
     border: none;
+    margin-bottom: 30px;
   }
 
   .cu-pricing-plan {
@@ -397,8 +490,6 @@
     font-size: 48px;
   }
 
-  
-
   .cu-plan-badge {
     top: -22px;
   }
@@ -408,8 +499,6 @@
   .cu-pricing-table-wrapper {
     margin: 20px 0;
   }
-
-  
   
   .cu-pricing-plan {
     padding: 24px 20px;
@@ -429,33 +518,3 @@
     border-radius: 10px 10px 0 0;
   }
 }
-
-.cu-see-more-features {
-    position: absolute;
-    bottom: -19px;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 1px solid var(--cu-border-light);
-    background-color: var(--cu-background-white);
-    color: #1a1a1a;
-    width: 100%;
-    font-weight: 600;
-    font-size: 16px;
-    padding: 12px 32px;
-    border-radius: 999px; // makes it pill-shaped
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  
-    &:hover {
-      background-color: #eaeaec;
-      transform: translateX(-50%) scale(1.02);
-    }
-  }
-  
-  // Ensure .cu-pricing-plans is relatively positioned so the button can be absolute inside it
-  .cu-pricing-plans {
-    position: relative;
-    padding-bottom: 60px; // give room for button so it doesn’t overlap content
-  }
-  

@@ -2,7 +2,6 @@ import { registerBlockType } from '@wordpress/blocks';
 import { InspectorControls } from '@wordpress/block-editor';
 import { 
     PanelBody, 
-    CheckboxControl, 
     ToggleControl, 
     TextControl,
     Spinner,
@@ -13,13 +12,6 @@ import { useState, useEffect } from '@wordpress/element';
 import ServerSideRender from '@wordpress/server-side-render';
 
 import './editor.scss';
-
-const PLAN_OPTIONS = [
-    { value: 'free', label: 'Free Forever' },
-    { value: 'unlimited', label: 'Unlimited' },
-    { value: 'business', label: 'Business' },
-    { value: 'enterprise', label: 'Enterprise' }
-];
 
 registerBlockType('clickup/pricing-table', {
     title: __('ClickUp Pricing Table', 'cu-pricing-table'),
@@ -32,26 +24,34 @@ registerBlockType('clickup/pricing-table', {
         __('table', 'cu-pricing-table'),
     ],
     attributes: {
-        selectedPlans: {
-            type: 'array',
-            default: ['free', 'unlimited', 'business', 'enterprise']
-        },
         showBanner: {
             type: 'boolean',
             default: false
         },
         bannerText: {
             type: 'string',
-            default: 'AI-powered features available'
+            default: "The world's most complete work AI, starting at $9 per month"
+        },
+        bannerSubtext: {
+            type: 'string',
+            default: 'ClickUp Brain is a no Brainer. One AI to manage your work, at a fraction of the cost.'
+        },
+        bannerCtaText: {
+            type: 'string',
+            default: 'Try for free'
+        },
+        enterpriseDescription: {
+            type: 'string',
+            default: 'Get a custom demo and see how ClickUp aligns with your goals.'
         },
         ctaText: {
             type: 'string',
-            default: 'See more features'
+            default: 'Get started'
         }
     },
 
     edit: function({ attributes, setAttributes }) {
-        const { selectedPlans, showBanner, bannerText, ctaText } = attributes;
+        const { showBanner, bannerText, bannerSubtext, bannerCtaText, enterpriseDescription, ctaText } = attributes;
         const [pricingData, setPricingData] = useState(null);
         const [loading, setLoading] = useState(true);
         const [error, setError] = useState(null);
@@ -89,28 +89,9 @@ registerBlockType('clickup/pricing-table', {
             fetchPricingData();
         }, []);
 
-        const onPlanChange = (planValue, isChecked) => {
-            const newPlans = isChecked 
-                ? [...selectedPlans, planValue]
-                : selectedPlans.filter(plan => plan !== planValue);
-            
-            setAttributes({ selectedPlans: newPlans });
-        };
-
         return (
             <>
                 <InspectorControls>
-                    <PanelBody title={__('Plan Selection', 'cu-pricing-table')}>
-                        {PLAN_OPTIONS.map(plan => (
-                            <CheckboxControl
-                                key={plan.value}
-                                label={plan.label}
-                                checked={selectedPlans.includes(plan.value)}
-                                onChange={(isChecked) => onPlanChange(plan.value, isChecked)}
-                            />
-                        ))}
-                    </PanelBody>
-                    
                     <PanelBody title={__('Banner Settings', 'cu-pricing-table')}>
                         <ToggleControl
                             label={__('Show AI Banner', 'cu-pricing-table')}
@@ -119,12 +100,35 @@ registerBlockType('clickup/pricing-table', {
                         />
                         
                         {showBanner && (
-                            <TextControl
-                                label={__('Banner Text', 'cu-pricing-table')}
-                                value={bannerText}
-                                onChange={(value) => setAttributes({ bannerText: value })}
-                            />
+                            <>
+                                <TextControl
+                                    label={__('Banner Text', 'cu-pricing-table')}
+                                    value={bannerText}
+                                    onChange={(value) => setAttributes({ bannerText: value })}
+                                />
+                                
+                                <TextControl
+                                    label={__('Banner Subtext', 'cu-pricing-table')}
+                                    value={bannerSubtext}
+                                    onChange={(value) => setAttributes({ bannerSubtext: value })}
+                                />
+                                
+                                <TextControl
+                                    label={__('Banner CTA Button Text', 'cu-pricing-table')}
+                                    value={bannerCtaText}
+                                    onChange={(value) => setAttributes({ bannerCtaText: value })}
+                                />
+                            </>
                         )}
+                    </PanelBody>
+                    
+                    <PanelBody title={__('Pricing Plans Settings', 'cu-pricing-table')}>
+                        <TextControl
+                            label={__('Enterprise Plan Description', 'cu-pricing-table')}
+                            value={enterpriseDescription}
+                            onChange={(value) => setAttributes({ enterpriseDescription: value })}
+                            help={__('Custom description text for the Enterprise plan pricing area', 'cu-pricing-table')}
+                        />
                     </PanelBody>
                     
                     <PanelBody title={__('CTA Settings', 'cu-pricing-table')}>
@@ -153,17 +157,27 @@ registerBlockType('clickup/pricing-table', {
                     {!loading && !error && (
                         <div className="cu-pricing-preview">
                             <h3>{__('ClickUp Pricing Table Preview', 'cu-pricing-table')}</h3>
-                            <p>{__('Selected plans:', 'cu-pricing-table')} {selectedPlans.join(', ')}</p>
+                            
+                            {/* Show banner preview at the top */}
                             {showBanner && (
                                 <div className="cu-banner-preview">
-                                    <strong>{__('Banner:', 'cu-pricing-table')}</strong> {bannerText}
+                                    <strong>{__('Banner:', 'cu-pricing-table')}</strong> {bannerText || "The world's most complete work AI, starting at $9 per month"}
+                                    <br />
+                                    <strong>{__('Subtext:', 'cu-pricing-table')}</strong> {bannerSubtext || "ClickUp Brain is a no Brainer. One AI to manage your work, at a fraction of the cost."}
+                                    <br />
+                                    <strong>{__('CTA Button:', 'cu-pricing-table')}</strong> {bannerCtaText || 'Try for free'}
                                 </div>
                             )}
                             
-                            {/* Server-side render for accurate preview */}
+                            <p>{__('Displaying all ClickUp pricing plans', 'cu-pricing-table')}</p>
+                            
+                            {/* Server-side render with banner disabled for preview */}
                             <ServerSideRender
                                 block="clickup/pricing-table"
-                                attributes={attributes}
+                                attributes={{
+                                    ...attributes,
+                                    showBanner: false // Disable banner in server render to avoid duplication
+                                }}
                             />
                         </div>
                     )}

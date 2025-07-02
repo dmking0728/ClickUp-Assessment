@@ -3,7 +3,7 @@
  * Plugin Name: ClickUp Pricing Table
  * Description: Dynamic pricing table block that fetches live data from ClickUp API
  * Version: 1.0.0
- * Author: Your Name
+ * Author: Daniel King
  * Text Domain: clickup-pricing-table
  */
 
@@ -38,13 +38,25 @@ class ClickUpPricingTable {
                     'type' => 'array',
                     'default' => array('free', 'unlimited', 'business', 'enterprise')
                 ),
+                'enterpriseDescription' => array(
+                    'type' => 'string',
+                    'default' => 'Get a custom demo and see how ClickUp aligns with your goals.'
+                ),
                 'showBanner' => array(
                     'type' => 'boolean',
                     'default' => false
                 ),
                 'bannerText' => array(
                     'type' => 'string',
-                    'default' => 'AI-powered features available'
+                    'default' => "The world's most complete work AI, starting at $9 per month"
+                ),
+                'bannerSubtext' => array(
+                    'type' => 'string',
+                    'default' => 'ClickUp Brain is a no Brainer. One AI to manage your work, at a fraction of the cost.'
+                ),
+                'bannerCtaText' => array(
+                    'type' => 'string',
+                    'default' => 'Try for free'
                 ),
                 'ctaText' => array(
                     'type' => 'string',
@@ -81,9 +93,6 @@ class ClickUpPricingTable {
         $css_file = CLICKUP_PRICING_TABLE_PLUGIN_URL . 'build/style-frontend.css';
         $js_file = CLICKUP_PRICING_TABLE_PLUGIN_URL . 'build/frontend.js';
         
-        error_log('Enqueuing frontend CSS: ' . $css_file);
-        error_log('CSS file exists: ' . (file_exists(CLICKUP_PRICING_TABLE_PLUGIN_DIR . 'build/style-frontend.css') ? 'YES' : 'NO'));
-        
         wp_enqueue_style(
             'clickup-pricing-table',
             $css_file,
@@ -102,9 +111,14 @@ class ClickUpPricingTable {
     
     public function render_block($attributes) {
         $selected_plans = $attributes['selectedPlans'];
+        $enterprise_description = $attributes['enterpriseDescription'];
         $show_banner = $attributes['showBanner'];
         $banner_text = $attributes['bannerText'];
-        $cta_text = $attributes['ctaText'];
+        $banner_subtext = $attributes['bannerSubtext'];
+        $banner_cta_text = $attributes['bannerCtaText'];
+        
+        // Handle empty CTA text with proper fallback
+        $cta_text = !empty($attributes['ctaText']) ? $attributes['ctaText'] : 'Get started';
         
         // Get cached pricing data
         $pricing_data = $this->get_pricing_data();
@@ -113,19 +127,14 @@ class ClickUpPricingTable {
             return '<div class="clickup-pricing-error">Unable to load pricing data</div>';
         }
         
-        error_log('Template path: ' . CLICKUP_PRICING_TABLE_PLUGIN_DIR . 'templates/pricing-table.php');
-        error_log('Template exists: ' . (file_exists(CLICKUP_PRICING_TABLE_PLUGIN_DIR . 'templates/pricing-table.php') ? 'YES' : 'NO'));
-        
         ob_start();
         $template_result = include CLICKUP_PRICING_TABLE_PLUGIN_DIR . 'templates/pricing-table.php';
         $output = ob_get_clean();
         
-        error_log('Template include result: ' . var_export($template_result, true));
-        error_log('Template output length: ' . strlen($output));
-        
+        // Only log if there's actually an error
         if (empty($output)) {
-            error_log('Template produced no output');
-            return '<div class="cu-pricing-error">Template error - check logs</div>';
+            error_log('ClickUp Pricing Table: Template produced no output');
+            return '<div class="cu-pricing-error">Template error - please check plugin installation</div>';
         }
         
         return $output;
@@ -135,11 +144,8 @@ class ClickUpPricingTable {
         // Check for cached data first
         $cached_data = get_transient('clickup_pricing_data');
         if ($cached_data !== false) {
-            error_log('ClickUp: Using cached pricing data');
             return $cached_data;
         }
-        
-        error_log('ClickUp: Fetching fresh pricing data from API');
         
         // Fetch fresh data
         $response = wp_remote_get('https://clickup.com/data/pricing/pricing-en.json', array(
@@ -155,7 +161,6 @@ class ClickUpPricingTable {
         }
         
         $response_code = wp_remote_retrieve_response_code($response);
-        error_log('ClickUp API Response Code: ' . $response_code);
         
         if ($response_code !== 200) {
             error_log('ClickUp API returned non-200 status: ' . $response_code);
@@ -172,20 +177,15 @@ class ClickUpPricingTable {
         $data = json_decode($body, true);
         
         if (!$data) {
-            error_log('ClickUp Pricing API: Invalid JSON response');
-            error_log('JSON Error: ' . json_last_error_msg());
-            error_log('Raw response (first 500 chars): ' . substr($body, 0, 500));
+            error_log('ClickUp Pricing API: Invalid JSON response - ' . json_last_error_msg());
             return false;
         }
         
         // Verify the expected structure exists
         if (!isset($data['pricingV3TierCards'])) {
-            error_log('ClickUp API: Missing pricingV3TierCards in response');
-            error_log('Available keys: ' . implode(', ', array_keys($data)));
+            error_log('ClickUp API: Missing pricingV3TierCards in response. Available keys: ' . implode(', ', array_keys($data)));
             return false;
         }
-        
-        error_log('ClickUp: Successfully fetched pricing data with ' . count($data['pricingV3TierCards']) . ' tier cards');
         
         // Cache for 1 hour
         set_transient('clickup_pricing_data', $data, HOUR_IN_SECONDS);
@@ -197,7 +197,6 @@ class ClickUpPricingTable {
         global $post;
         
         if (is_singular() && has_block('clickup/pricing-table', $post)) {
-            error_log('Found ClickUp pricing block on page, force enqueuing styles');
             $this->enqueue_frontend_assets();
         }
     }
